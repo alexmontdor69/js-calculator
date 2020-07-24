@@ -1,3 +1,4 @@
+// Operator Object
 function Ops (name,hasPriority,args,exeFunc) {
     this.name=name;
     this.hasPriority = hasPriority;
@@ -5,51 +6,74 @@ function Ops (name,hasPriority,args,exeFunc) {
     
 }
 
+// Calculus Object
 function Calculus () {
     commands = [0];
-    this.result = 0;
 
-    this.compute = 0;
-/*    add = {priority : 0,
-        needNumber=true};
-    sub = {priority : 0,
-        needNumber=true};
-    multiply = {priority : 1,
-                needNumber=true};
-    divide = {priority : 1,
-        needNumber=true};
-*/
-    this.adding = function (number) {
+    function addBracket (state, number) {
+        if (state =="bracketOpen"){
+            return new Array("bracketOpen", number);
+        }
+            if (state =="bracketClose")
+            return new Array (number,"bracketClose");  
+        
+        throw new Error ("bracket error");
+
+    };
+
+// Definitions
+    this.adding = function (number, bracketState) {
         commands.push('add');
-        commands.push(number);
-        this.result += number;
+        if (bracketState){
+            commands = commands.concat(addBracket(bracketState,number))
+        }
+        else 
+            commands.push (number);
+
     };
 
-    this.substracting = function (number) {
+    this.substracting = function (number,bracketState) {
         commands.push('sub');
-        commands.push(number);
-        this.result += -number;
+
+        if (bracketState){
+            commands = commands.concat(addBracket(bracketState,number))
+        }
+        else 
+            commands.push (number);
     };
 
-    this.multiplying = function (number) {
+    this.multiplying = function (number,bracketState) {
         commands.push('multiply');
-        commands.push(number);
-        this.result = this.result*number;
+        if (bracketState){
+            commands = commands.concat(addBracket(bracketState,number))
+        }
+        else 
+            commands.push (number);
     };
 
-    this.dividing = function (number) {
-        commands.push('divide');
-        commands.push(number);
+    this.dividing = function (number,bracketState) {
         if (!number)
             throw new Error('no division by 0');
-            this.result = this.result/number;
+        this.result = this.result/number;
+        commands.push('divide');
+        if (bracketState){
+            commands = commands.concat(addBracket(bracketState,number))
+        }
+        else 
+            commands.push (number);
     };
 
 
-    this.add = new Ops ('add', false,'a,b', `return a+b;`);
-    this.sub = new Ops ('sub', false,'a,b', `return a-b;`);
-    this.multiply = new Ops ('multiply', true,'a,b', `return a*b;`);
-    this.divide = new Ops ('divide', true,'a,b', `return a/b;`);
+// make them private
+    this.add = new Ops ('+', false,'a,b', `return a+b;`);
+    this.sub = new Ops ('-', false,'a,b', `return a-b;`);
+    this.multiply = new Ops ('x', true,'a,b', `return a*b;`);
+    this.divide = new Ops ('/', true,'a,b', `return a/b;`);
+
+    this.bracketOpen = new Ops ('(', true,'a,b', `
+        console.log ('b',b,typeof b,b.lastIndexOf("bracketClose",-1));
+        return b.lastIndexOf("bracketClose",-1);`);
+    this.bracketClose = new Ops (')', true,'a,b', `return;`);
 
     this.calculate = function (LHS,RHS) {
         console.log (RHS, RHS[0], typeof RHS[0])
@@ -61,13 +85,37 @@ function Calculus () {
                 return this.calculate (LHS, RHS.slice(1))
         }
         if (typeof RHS[0] == "string"){
-
             //The operation has priority or not
             // no prority ... compute the remaining commands
             // priority execute the next number
-            console.log (this[RHS[0]].name)
             if (this[RHS[0]].hasPriority){
-                console.log ('has priority');
+                if (RHS[0] == "bracketOpen"){
+                    //return 1
+                    console.log ('open braket');
+                    /*
+                    console.log ("LHS operation",RHS,RHS.slice(1,this[RHS[0]].execute(LHS,RHS)));
+                    console.log ('LHS',this.calculate (RHS[1],RHS.slice(2,this[RHS[0]].execute(LHS,RHS))) )
+                    console.log ('RHS',RHS.slice(1,RHS.lastIndexOf("bracketClose",-1)) )
+                    console.log ('=',this.calculate (
+                        0,
+                        RHS.slice(1,this[RHS[0]].execute(LHS,RHS))));
+*/
+                    return this.calculate(
+                        this.calculate (
+                            0,
+                            RHS.slice(1,this[RHS[0]].execute(LHS,RHS))),
+                        RHS.slice(RHS.lastIndexOf("bracketClose",-1)+1)
+                        );
+                }
+                // bracket into bracket
+                if (RHS[1]=="bracketOpen") {
+                    console.log ('open braket2',this[RHS[0]].execute(LHS,this.calculate(0,RHS.slice(2,RHS.lastIndexOf("bracketClose",-1)))),
+                    RHS.slice(RHS.lastIndexOf("bracketClose",-1)+1));
+                    return this.calculate(this[RHS[0]].execute(LHS,this.calculate(0,RHS.slice(2,RHS.lastIndexOf("bracketClose",-1)))),
+                    RHS.slice(RHS.lastIndexOf("bracketClose",-1)+1));
+
+                }
+
                 return this.calculate (this[RHS[0]].execute(LHS,RHS[1]), RHS.slice(2));
             }
                 
@@ -83,9 +131,14 @@ function Calculus () {
         }
     })
 }
+
+
 const calcul = new Calculus();
-calcul.adding (10);
-calcul.adding (2);
+calcul.adding (2,'bracketOpen');
+calcul.multiplying(10,'bracketOpen');
+calcul.adding (10,'bracketClose');
+calcul.adding (3,'bracketClose');
+
 calcul.multiplying (10);
-calcul.dividing (4);
+calcul.dividing (2);
 calcul.substracting (0.5);
