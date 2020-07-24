@@ -1,67 +1,49 @@
+// Expression object
+function Expression (id,upperLevel) {
+    this.id = id;
+    this.upperLevel=upperLevel;
+    this.content = [];
+    this.value=0;
+} 
+
 // Operator Object
 function Ops (name,hasPriority,args,exeFunc) {
     this.name=name;
     this.hasPriority = hasPriority;
-    this.execute=new Function (args, exeFunc)
-    
+    this.execute=new Function (args,exeFunc);
+        
 }
 
 // Calculus Object
 function Calculus () {
     commands = [0];
-
-    function addBracket (state, number) {
-        if (state =="bracketOpen"){
-            return new Array("bracketOpen", number);
-        }
-            if (state =="bracketClose")
-            return new Array (number,"bracketClose");  
-        
-        throw new Error ("bracket error");
-
+    let currentExpression = 'main';
+    this.expressionsList = {'main':new Expression(currentExpression,'main')};
+    this.expressionsList[currentExpression].content= [0];
+    
+    function selectExpression (expressionId) {
+        currentExpression = expressionId;
     };
 
-// Definitions
-    this.adding = function (number, bracketState) {
-        commands.push('add');
-        if (bracketState){
-            commands = commands.concat(addBracket(bracketState,number))
+this.createExpression = function (name, number, bracketState)
+{
+        if (bracketState=='bracketOpen'){
+            this.expressionsList[currentExpression].content=this.expressionsList[currentExpression].content.concat ([name,'exp-'+Object.keys(this.expressionsList).length]);
+            this.expressionsList[Object.keys(this.expressionsList).length]=new Expression(Object.keys(this.expressionsList).length,this.expressionsList[currentExpression].id);
+            selectExpression (Object.keys(this.expressionsList).length-1);
+            this.expressionsList[currentExpression].content=this.expressionsList[currentExpression].content.concat ([number]);
         }
-        else 
-            commands.push (number);
-
-    };
-
-    this.substracting = function (number,bracketState) {
-        commands.push('sub');
-
-        if (bracketState){
-            commands = commands.concat(addBracket(bracketState,number))
+        else if (bracketState=='bracketClose'){
+            this.expressionsList[currentExpression].content=this.expressionsList[currentExpression].content.concat ([name,number]);
+            //bracket close so cursor go to parent expression
+            this.expressionsList[currentExpression].value=this.calculate (this.expressionsList[currentExpression].content[0],this.expressionsList[currentExpression].content)
+            selectExpression (this.expressionsList[currentExpression].upperLevel);
         }
         else 
-            commands.push (number);
+            this.expressionsList[currentExpression].content=this.expressionsList[currentExpression].content.concat ([name,number]);
+
     };
 
-    this.multiplying = function (number,bracketState) {
-        commands.push('multiply');
-        if (bracketState){
-            commands = commands.concat(addBracket(bracketState,number))
-        }
-        else 
-            commands.push (number);
-    };
-
-    this.dividing = function (number,bracketState) {
-        if (!number)
-            throw new Error('no division by 0');
-        this.result = this.result/number;
-        commands.push('divide');
-        if (bracketState){
-            commands = commands.concat(addBracket(bracketState,number))
-        }
-        else 
-            commands.push (number);
-    };
 
 
 // make them private
@@ -79,49 +61,36 @@ function Calculus () {
         console.log (RHS, RHS[0], typeof RHS[0])
         
         if (typeof RHS[0] == "number") {
+            console.log('Number',RHS[0])
             LHS=RHS[0]
 
             if (RHS.length>1)
                 return this.calculate (LHS, RHS.slice(1))
         }
         if (typeof RHS[0] == "string"){
+            if (RHS[0].slice(0,4)=="exp-")
+                return this.calculate(this.expressionsList[RHS[0].slice(4)].value,RHS.slice(1))
             //The operation has priority or not
             // no prority ... compute the remaining commands
             // priority execute the next number
+
             if (this[RHS[0]].hasPriority){
-                if (RHS[0] == "bracketOpen"){
-                    //return 1
-                    console.log ('open braket');
-                    /*
-                    console.log ("LHS operation",RHS,RHS.slice(1,this[RHS[0]].execute(LHS,RHS)));
-                    console.log ('LHS',this.calculate (RHS[1],RHS.slice(2,this[RHS[0]].execute(LHS,RHS))) )
-                    console.log ('RHS',RHS.slice(1,RHS.lastIndexOf("bracketClose",-1)) )
-                    console.log ('=',this.calculate (
-                        0,
-                        RHS.slice(1,this[RHS[0]].execute(LHS,RHS))));
-*/
-                    return this.calculate(
-                        this.calculate (
-                            0,
-                            RHS.slice(1,this[RHS[0]].execute(LHS,RHS))),
-                        RHS.slice(RHS.lastIndexOf("bracketClose",-1)+1)
-                        );
-                }
-                // bracket into bracket
-                if (RHS[1]=="bracketOpen") {
-                    console.log ('open braket2',this[RHS[0]].execute(LHS,this.calculate(0,RHS.slice(2,RHS.lastIndexOf("bracketClose",-1)))),
-                    RHS.slice(RHS.lastIndexOf("bracketClose",-1)+1));
-                    return this.calculate(this[RHS[0]].execute(LHS,this.calculate(0,RHS.slice(2,RHS.lastIndexOf("bracketClose",-1)))),
-                    RHS.slice(RHS.lastIndexOf("bracketClose",-1)+1));
-
-                }
-
-                return this.calculate (this[RHS[0]].execute(LHS,RHS[1]), RHS.slice(2));
-            }
+                if (typeof RHS[1]== "number")
+                    return this.calculate (this[RHS[0]].execute(LHS,RHS[1]), RHS.slice(2));
+                if (RHS[1].slice(0,4)=="exp-")
+                    return this.calculate (this[RHS[0]].execute(LHS,this.expressionsList[RHS[1].slice(4)].value), RHS.slice(2));
                 
-            else
+            }
+            else {
+                console.log (
+                    LHS,
+                    this[RHS[0]],
+                    this.calculate (LHS, RHS.slice(1)),
+                    '=',
+                    this[RHS[0]].execute(LHS,this.calculate (LHS, RHS.slice(1))))
                 return this[RHS[0]].execute(LHS,this.calculate (LHS, RHS.slice(1)));
         }
+    }
         return LHS
 
     };
@@ -134,11 +103,15 @@ function Calculus () {
 
 
 const calcul = new Calculus();
-calcul.adding (2,'bracketOpen');
-calcul.multiplying(10,'bracketOpen');
-calcul.adding (10,'bracketClose');
-calcul.adding (3,'bracketClose');
 
-calcul.multiplying (10);
-calcul.dividing (2);
-calcul.substracting (0.5);
+// 0+(2*(10+10)+3)*10/2-.5
+calcul.createExpression ('add',2,'bracketOpen');
+calcul.createExpression('multiply',10,'bracketOpen');
+calcul.createExpression ('add',10,'bracketClose');
+calcul.createExpression ('add',3,'bracketClose');
+
+calcul.createExpression ('multiply',10);
+calcul.createExpression ('divide',2);
+calcul.createExpression ('sub',0.5);
+
+calcul.calculate(calcul.expressionsList.main.content[0],calcul.expressionsList.main.content)
