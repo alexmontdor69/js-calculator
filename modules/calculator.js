@@ -1,19 +1,18 @@
-function Calculator () {
-    this.calculs=[new Calculus];
-    let indexCalcul=this.calculs.length-1;
+import { Expression} from './components.js'
+
+export default function Calculator () {
+    this.calculs=[];
+    let indexCalcul=0;
+    this.currentCalcul ={}
     this.addCalcul = function () {
         this.calculs.push (new Calculus);
+        indexCalcul=this.calculs.length-1;
+        this.currentCalcul=this.calculs[indexCalcul];
     }
+    this.addCalcul();
 }
 
-// Expression object - 
-//main expression => [2, "add", 3, "mutiply", epx-1]
-function Expression (id,upperLevel) {
-    this.id = id;
-    this.upperLevel=upperLevel;
-    this.content = [];
-    this.value=0;
-} 
+
 
 // Operator Object
 // like add, sub, multiply... 
@@ -121,21 +120,9 @@ function Calculus () {
     })
 }
 
-
 const calcul = new Calculus();
 
 // 0+(2*(10+10)+3)*10/2-.5
-calcul.addToExpression ('add',2,'bracketOpen');
-calcul.addToExpression('multiply',10,'bracketOpen');
-calcul.addToExpression ('add',10,'bracketClose');
-calcul.addToExpression ('add',3,'bracketClose');
-
-calcul.addToExpression ('multiply',10);
-calcul.addToExpression ('divide',2);
-calcul.addToExpression ('sub',0.5);
-
-calcul.getResult()
 
 
-// Starting up the calculator
-const myCalculator = new Calculator();
+
