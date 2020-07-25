@@ -17,7 +17,9 @@ function defaultCalculation(param) {
     document.getElementById('main').textContent= myCalculator.currentCalcul.getResult();
     console.log('result', myCalculator);
 }
-
+function showResult() {
+    document.getElementById('main').textContent = myCalculator.currentCalcul.expressionsList.main.value;
+}
 function addCalcul () {
     myCalculator.addCalcul();
     console.log ('calcul added', myCalculator);
@@ -34,3 +36,4 @@ console.log (defaultCalculation('module'))
 document.getElementById("btn-1").addEventListener("click", defaultCalculation);
 document.getElementById("btn-2").addEventListener("click", addCalcul);
 document.getElementById("btn-3").addEventListener("click", displayNumberCalcul);
+document.getElementById("btn-4").addEventListener("click", showResult);
