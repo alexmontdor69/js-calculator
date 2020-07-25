@@ -1,3 +1,11 @@
+function Calculator () {
+    this.calculs=[new Calculus];
+    let indexCalcul=this.calculs.length-1;
+    this.addCalcul = function () {
+        this.calculs.push (new Calculus);
+    }
+}
+
 // Expression object - 
 //main expression => [2, "add", 3, "mutiply", epx-1]
 function Expression (id,upperLevel) {
@@ -20,7 +28,7 @@ function Ops (name,hasPriority,args,exeFunc) {
 // Calculus Object
 // Is the structure of one calcul
 function Calculus () {
-    commands = [0];
+    
     let currentExpression = 'main';
     this.expressionsList = {'main':new Expression(currentExpression,'main')};
     this.expressionsList[currentExpression].content= [0];
@@ -127,3 +135,7 @@ calcul.addToExpression ('divide',2);
 calcul.addToExpression ('sub',0.5);
 
 calcul.getResult()
+
+
+// Starting up the calculator
+const myCalculator = new Calculator();
