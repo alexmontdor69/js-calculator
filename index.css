@@ -1,0 +1,12 @@
+/* display bracket span */
+.bracket:before {
+    content: "(";
+    margin-left: 6px;
+}
+.bracket:after {
+    content: ")";
+    margin-right: 6px;
+}
+
+/* touch for numbers */
+.number-touch {}
