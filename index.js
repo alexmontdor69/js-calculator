@@ -21,13 +21,14 @@ function initOperands () {
 function displayCalcul(key, content, upperlevel) {
     console.log (upperlevel)
     let newSpan = document.createElement('span');
-    newSpan.id = key;
+    newSpan.className = key;
+
     if (key=='main')
-        newSpan.className="main-expression";
+        newSpan.className="main";
     else
         newSpan.className="bracket";
-        
-            document.getElementById(upperlevel).appendChild(newSpan);
+        console.log(document.getElementsByClassName(upperlevel),document.getElementsByClassName(upperlevel)[0])
+    document.getElementsByClassName(upperlevel)[0].appendChild(newSpan);
 
     content.map(expression =>{
         if (typeof expression=='string' && expression.slice(0,4) == 'exp-') {
@@ -42,7 +43,8 @@ function displayCalcul(key, content, upperlevel) {
                 newDigit.textContent = myCalculator.getOperatorSymbol(expression)
             else
                 newDigit.textContent = expression
-            document.getElementById(key).appendChild(newDigit);
+            document.getElementsByClassName(key)[0].appendChild(newDigit);
+            document.get
         }
        /*  if (typeof expression=="string")
             document.getElementById(key).textContent =operand[expression].name;
@@ -67,7 +69,19 @@ function displayNumber(numberDescriptions) {
 function addExpression (el,ev) {
     console.log(el,ev);
     myCalculator.currentCalcul.addExpression (el.srcElement.id);
+
+    [...document.getElementsByClassName("main")].forEach(
+        (element, index, array) => {
+            if (element.parentElement.id == "current-main-expression") 
+                element.remove();
+        }
+    );
+
+    /* let nodeToRemove = mainNodes.filter (node => mainNode.parentElement.id='current-main-expression')
+    nodeToRemove.remove(); */
+    
     displayCalcul('main',myCalculator.currentCalcul.expressionsList['main'].content,'current-main-expression');
+    showResult()
 }
 
 /* function defaultCalculation(param) {
@@ -83,14 +97,42 @@ function addExpression (el,ev) {
     console.log('result', myCalculator);
 }
  */
-function showResult() {
+function showPreviousCalcul(){
+    const totalCalcul = myCalculator.calculs.length;
+/*     myNode = document.getElementsByClassName("main")
+    [...document.getElementsByClassName("main")].forEach(
+        (element, index, array) => {
+            if (element.parentElement.id == "previous-main-expression") 
+                element.remove();
+        }
+    ); */
+    const parentNode = document.getElementById('previous-main-expression')
+    for (let inc = 0; inc<totalCalcul; inc++){
+        const myNode = document.getElementById('prev-exp-'+inc.toString())
+        if (myNode)
+            myNode.remove();
+        let newDiv = document.createElement('div');
+        newDiv.id ='prev-exp-'+inc.toString();
+        newDiv.className = 'prev-exp-'+inc.toString();
+        parentNode.appendChild(newDiv);
+        displayCalcul('main',myCalculator.calculs[inc].expressionsList['main'].content,'prev-exp-'+inc.toString());
+    }
+        
     
-        document.getElementById('main').textContent= myCalculator.currentCalcul.getResult();
+}
+
+function showResult() {
+        const result = myCalculator.currentCalcul.getResult();
+        if (result)
+            document.getElementById('result').textContent= result;
+        else
+            document.getElementById('result').textContent= '--';
    
 }
 
 function addCalcul () {
     myCalculator.addCalcul();
+    showPreviousCalcul()
     console.log ('calcul added', myCalculator);
 }
 

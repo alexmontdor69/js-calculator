@@ -44,15 +44,15 @@ function Calculus () {
     }
     this.addExpression = function (name)
     { 
-        console.log ('expression',name)
+        console.log ('expression',parseInt(name), typeof (parseInt(name)))
             if (name=='bracketOpen'){
                 this.expressionsList[currentExpression].content=this.expressionsList[currentExpression].content.concat ([name,'exp-'+Object.keys(this.expressionsList).length]);
                 this.expressionsList[Object.keys(this.expressionsList).length]=new Expression(Object.keys(this.expressionsList).length,this.expressionsList[currentExpression].id);
                 selectExpression (Object.keys(this.expressionsList).length-1);
             }
             
-            else
-                if (parseInt(name))
+            else{
+                if (typeof (parseInt(name)) == "number"&& parseInt(name)>=0 && parseInt(name)<=9)
                 {
                     const lastIndex = this.expressionsList[currentExpression].content.length-1;
                     const lastContent = this.expressionsList[currentExpression].content[lastIndex]
@@ -65,6 +65,8 @@ function Calculus () {
                     this.expressionsList[currentExpression].content=this.expressionsList[currentExpression].content.concat ([name]);
         
                 };
+            }
+
     this.addToExpression = function (name, number, bracketState)
     { 
         console.log ('expression',name, number, bracketState)
