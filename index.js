@@ -18,39 +18,52 @@ function initOperands () {
 }
 
 //-----     Page functions
-function displayCalcul(key, content, upperlevel) {
-    console.log (upperlevel)
-    let newSpan = document.createElement('span');
-    newSpan.className = key;
-
+function displayCalcul(key, content, upperlevel, current ='current') {
+    
+    const spanId = `${upperlevel}_${key}`;
+    
+    // Create an element to display the expression
+    const newSpan = document.createElement('span');
+    newSpan.id = spanId;
     if (key=='main')
         newSpan.className="main";
     else
         newSpan.className="bracket";
-        console.log(document.getElementsByClassName(upperlevel),document.getElementsByClassName(upperlevel)[0])
-    document.getElementsByClassName(upperlevel)[0].appendChild(newSpan);
 
+    document.getElementById(upperlevel).appendChild(newSpan);
+
+    // Display the expression and the sub expressions (into brackets)
     content.map(expression =>{
+        
         if (typeof expression=='string' && expression.slice(0,4) == 'exp-') {
-            displayCalcul(expression.slice(4),myCalculator.currentCalcul.expressionsList[expression.slice(4)].content, myCalculator.currentCalcul.expressionsList[expression.slice(4)].upperLevel)
+            // For the sub expression
+            // Management of the current list and the previous next List
+            if (current=='current')
+                displayCalcul(expression,myCalculator.currentCalcul.expressionsList[expression.slice(4)].content, spanId)
+            else
+                displayCalcul(expression,myCalculator.calculs[current].expressionsList[expression.slice(4)].content, spanId)
+
         }else
 
         {
+            // For the main expression
             let newDigit = document.createElement('span');
-            newDigit.name = key;
+            newDigit.id = key;
             newDigit.className = 'digit';
             if (typeof expression=='string') 
                 newDigit.textContent = myCalculator.getOperatorSymbol(expression)
             else
                 newDigit.textContent = expression
-            document.getElementsByClassName(key)[0].appendChild(newDigit);
-            document.get
+            document.getElementById(spanId).appendChild(newDigit);
+            
         }
-       /*  if (typeof expression=="string")
-            document.getElementById(key).textContent =operand[expression].name;
+/* Not SURE ABOUT THIS PART
+PROBABLY TO GET RID OF
 
+        if (typeof expression=="string")
+            document.getElementById(key).textContent =operand[expression].name;
         else
-        document.getElementById(key).addEventListener("click", addControl ); */
+            document.getElementById(key).addEventListener("click", addControl ); */
     })
 }
 function displayNumber(numberDescriptions) {
@@ -99,23 +112,20 @@ function addExpression (el,ev) {
  */
 function showPreviousCalcul(){
     const totalCalcul = myCalculator.calculs.length;
-/*     myNode = document.getElementsByClassName("main")
-    [...document.getElementsByClassName("main")].forEach(
-        (element, index, array) => {
-            if (element.parentElement.id == "previous-main-expression") 
-                element.remove();
-        }
-    ); */
-    const parentNode = document.getElementById('previous-main-expression')
+    const parentElementName = 'previous-main-expression';
+    const parentNode = document.getElementById(parentElementName);
+
+    parentNode.innerHTML='';
     for (let inc = 0; inc<totalCalcul; inc++){
-        const myNode = document.getElementById('prev-exp-'+inc.toString())
+        const nodeId=`prev-exp-${inc.toString()}`;
+        const myNode = document.getElementById(nodeId)
         if (myNode)
             myNode.remove();
         let newDiv = document.createElement('div');
         newDiv.id ='prev-exp-'+inc.toString();
-        newDiv.className = 'prev-exp-'+inc.toString();
+        newDiv.className = 'prev-exp';
         parentNode.appendChild(newDiv);
-        displayCalcul('main',myCalculator.calculs[inc].expressionsList['main'].content,'prev-exp-'+inc.toString());
+        displayCalcul('main',myCalculator.calculs[inc].expressionsList['main'].content,nodeId,inc.toString());
     }
         
     

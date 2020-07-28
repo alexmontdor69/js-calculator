@@ -10,3 +10,10 @@
 
 /* touch for numbers */
 .number-touch {}
+
+/*style with expressions */
+.current-main-expression {}
+.previous-main-expression {}
+.prev-exp{
+    display: block;
+}
