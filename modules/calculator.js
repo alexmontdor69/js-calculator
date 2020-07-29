@@ -224,44 +224,8 @@ const getResultsFor = function (expressions){
         console.log ('Processing to Final Calculation',lowExpressions, mediumPriorityExp)
         result=getResultsFor (lowExpressions)
         console.log ('Calculation gives', result)
+        return result;
 
-
-/*         console.log ('calculate', LHS,RHS)
-
-        if (typeof RHS[0] == "number") {
-            //console.log('Number',RHS[0])
-            LHS=RHS[0]
-
-            if (RHS.length>1){
-                //console.log("final result",this.calculate (LHS, RHS.slice(1)))
-                return this.calculate (LHS, RHS.slice(1))
-            }
-        }
-        if (typeof RHS[0] == "string"){
-
-            if (RHS[0].slice(0,4)=="exp-")
-                return this.calculate(this.expressionsList[RHS[0].slice(4)].value,RHS.slice(1))
-            //The operation has priority or not
-            // no prority ... compute the remaining commands
-            // priority execute the next number
-
-            if (operands[RHS[0]]&&operands[RHS[0]].hasPriority){
-                //console.log ({LHS})
-                if (typeof RHS[1]== "number")
-                    return this.calculate (operands[RHS[0]].execute(LHS,RHS[1]), RHS.slice(2));
-                if (RHS[1]&&RHS[1].slice(0,4)=="exp-")
-                    return this.calculate (operands[RHS[0]].execute(LHS,this.expressionsList[RHS[1].slice(4)].value), RHS.slice(2));
-                
-            }
-            else {
-                
-                //console.log ({LHS},this[RHS[0]].execute(LHS,this.calculate (LHS, RHS.slice(1))))
-                console.log('sliced',RHS.slice(1,2));
-                  return this.calculate (operands[RHS[0]].execute(LHS,this.calculate(LHS,RHS.slice(1,2))), RHS.slice(2));
-        }
-    }
-    console.log ('end Result, ', LHS)
-        return LHS; */
 
     };
     
