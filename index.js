@@ -97,19 +97,6 @@ function addExpression (el,ev) {
     showResult()
 }
 
-/* function defaultCalculation(param) {
-    console.log (param);
-    myCalculator.currentCalcul.addToExpression ('add',2,'bracketOpen');
-    myCalculator.currentCalcul.addToExpression('multiply',10,'bracketOpen');
-    myCalculator.currentCalcul.addToExpression ('add',10,'bracketClose');
-    myCalculator.currentCalcul.addToExpression ('add',3,'bracketClose');
-
-    myCalculator.currentCalcul.addToExpression ('multiply',10);
-    myCalculator.currentCalcul.addToExpression ('divide',2);
-    myCalculator.currentCalcul.addToExpression ('sub',0.5);
-    console.log('result', myCalculator);
-}
- */
 function showPreviousCalcul(){
     const totalCalcul = myCalculator.calculs.length;
     const parentElementName = 'previous-main-expression';
@@ -127,8 +114,14 @@ function showPreviousCalcul(){
         parentNode.appendChild(newDiv);
         displayCalcul('main',myCalculator.calculs[inc].expressionsList['main'].content,nodeId,inc.toString());
     }
-        
-    
+}
+
+function showCurrentCalcul() {
+    // remove the calcul
+    const myNode = document.getElementById('current-main-expression_main')
+    if (myNode)
+        myNode.remove();
+    displayCalcul('main',myCalculator.currentCalcul.expressionsList['main'].content,'current-main-expression');
 }
 
 function showResult() {
@@ -143,6 +136,7 @@ function showResult() {
 function addCalcul () {
     myCalculator.addCalcul();
     showPreviousCalcul()
+    showCurrentCalcul()
     console.log ('calcul added', myCalculator);
 }
 
@@ -167,3 +161,4 @@ let numberButtonDescription= numbers.map(number=>{return{name:number.toString(),
 displayNumber (numberButtonDescription);
 initOperands ();
 document.getElementById("btn-4").addEventListener("click", showResult);
+showResult()

@@ -12,7 +12,10 @@
 .number-touch {}
 
 /*style with expressions */
-.current-main-expression {}
+.current-main-expression {
+    display: block;
+    border: 2px black solid;
+}
 .previous-main-expression {}
 .prev-exp{
     display: block;
