@@ -4,11 +4,14 @@ import Calculator from './modules/calculator.js';
 const myCalculator = new Calculator();
 
 //-----     Init functions
-function initOperands () {
+/**
+ * display the operators
+ */
+function initOperators() {
     let inc=0, lineRef=1; 
-    const operands = myCalculator.showOperands();
+    const operators= myCalculator.showOperators();
 
-    for (const [key, operand] of Object.entries(operands)) {
+    for (const [key, operator] of Object.entries(operators)) {
         if( inc==0){
             let newDiv = document.createElement ('div');
             newDiv.id = `operator-line-${lineRef}`;
@@ -19,7 +22,7 @@ function initOperands () {
         newSpan.id = key;
         newSpan.className = 'touch operator-button';
         document.getElementById(`operator-line-${lineRef}`).appendChild(newSpan);
-        document.getElementById(key).textContent =operand.name;
+        document.getElementById(key).textContent =operator.name;
         document.getElementById(key).addEventListener("click", addExpression );
         inc++;
         if (inc==4) {
@@ -29,6 +32,10 @@ function initOperands () {
       }
 }
 
+/**
+ *  display the button type 'numbers' and affect a listener
+ * @param {name: string, value:number} numberDescriptions 
+ */
 function displayNumber(numberDescriptions) {
     let inc=0, lineRef=1;
 
@@ -56,11 +63,11 @@ function displayNumber(numberDescriptions) {
 }
 
 /**
- * 
- * @param {*} key 
- * @param {*} content 
- * @param {*} upperlevel 
- * @param {*} current 
+ * display a specific Calculus on the ui
+ * @param { Recursive  key to display the full expression} key 
+ * @param { Content to display} content 
+ * @param { Where to display} upperlevel 
+ * @param { If is a current calculus the user is working on} current 
  */
 function displayCalcul(key, content, upperlevel, current ='current') {
     
@@ -77,37 +84,50 @@ function displayCalcul(key, content, upperlevel, current ='current') {
     document.getElementById(upperlevel).appendChild(newSpan);
 
     // Display the expression and the sub expressions (into brackets)
-    content.map(expression =>{
-        
-        if (typeof expression=='string' && expression.slice(0,4) == 'exp-') {
-            // For the sub expression
-            // Management of the current list and the previous next List
-            if (current=='current')
-                displayCalcul(expression,myCalculator.currentCalcul.expressionsList[expression.slice(4)].content, spanId)
-            else
-                displayCalcul(expression,myCalculator.calculs[current].expressionsList[expression.slice(4)].content, spanId)
-
-        }else
-
-        {
-            // For the main expression
-            let newDigit = document.createElement('span');
-            newDigit.id = key;
-            newDigit.className = 'digit';
-            if (typeof expression=='string') 
-                newDigit.textContent = myCalculator.getOperatorSymbol(expression)
-            else
-                newDigit.textContent = expression
-            document.getElementById(spanId).appendChild(newDigit);
+    console.log ("content",content)
+    if (content && content.length==0)
+    {
+        let newDigit = document.createElement('span');
+        newDigit.id = key;
+        newDigit.className = 'digit';
+        newDigit.textContent = "Type first digit";
+        document.getElementById(spanId).appendChild(newDigit);
+    }
+    else
+    {    
+        content.map(expression =>{
             
-        }
+            if (typeof expression=='string' && expression.slice(0,4) == 'exp-') {
+                // For the sub expression
+                // Management of the current list and the previous next List
+                if (current=='current')
+                    displayCalcul(expression,myCalculator.currentCalcul.expressionsList[expression.slice(4)].content, spanId)
+                else
+                    displayCalcul(expression,myCalculator.calculs[current].expressionsList[expression.slice(4)].content, spanId)
 
-    })
+            }else
+
+            {
+                // For the main expression
+                let newDigit = document.createElement('span');
+                newDigit.id = key;
+                newDigit.className = 'digit';
+                if (typeof expression=='string') 
+                    newDigit.textContent = myCalculator.getOperatorSymbol(expression)
+                else
+                    newDigit.textContent = expression
+                document.getElementById(spanId).appendChild(newDigit);
+                
+            }
+
+        })
+    }
 }
 
 /**
- * 
- * @param {*} el 
+ * Add the value of the button to the current Calculus object
+ * The value is given by the id of the element
+ * @param {event from on click} el 
  */
 function addExpression (el) {
     myCalculator.currentCalcul.addExpression (el.srcElement.id);
@@ -127,7 +147,8 @@ function addExpression (el) {
 }
 
 /**
- * 
+ *  Display all the previous Calculus that the user created
+ *  To implement : onClick on previous calculus then display the current calculus
  */
 function showPreviousCalcul(){
     const totalCalcul = myCalculator.calculs.length;
@@ -135,7 +156,7 @@ function showPreviousCalcul(){
     const parentNode = document.getElementById(parentElementName);
 
     parentNode.innerHTML='';
-    for (let inc = 0; inc<totalCalcul; inc++){
+    for (let inc = 0; inc<totalCalcul-1; inc++){
         const nodeId=`prev-exp-${inc.toString()}`;
         const myNode = document.getElementById(nodeId)
         if (myNode)
@@ -148,14 +169,21 @@ function showPreviousCalcul(){
     }
 }
 
+/**
+ * Show the current calcul in a specific area
+ */
 function showCurrentCalcul() {
     // remove the calcul
     const myNode = document.getElementById('current-main-expression_main')
-    if (myNode)
+     if (myNode)
         myNode.remove();
-    displayCalcul('main',myCalculator.currentCalcul.expressionsList['main'].content,'current-main-expression');
-}
 
+    displayCalcul('main',myCalculator.currentCalcul.expressionsList['main'].content,'current-main-expression');
+ }
+
+/**
+ * Show the Result of the current calculus
+ */
 function showResult() {
         const result = myCalculator.currentCalcul.getResult();
         if (result)
@@ -174,31 +202,33 @@ function addCalcul () {
     myCalculator.addCalcul();
     showPreviousCalcul()
     showCurrentCalcul()
-    console.log ('calcul added', myCalculator);
+    showResult()
 }
 
 /**
- * 
+ * Calculate and display in the main the number of Calculus
+ * To implement : a specific Zone to show the numbr of Calculus
  */
 function  displayNumberCalcul() {
     document.getElementById('main').textContent= myCalculator.calculs.length;
-    console.log ( myCalculator.calculs.length);
+    
 }
 
-//console.log (defaultCalculation('module'))
 
 displayCalcul('main',myCalculator.currentCalcul.expressionsList['main'].content,'current-main-expression');
 
 //-----     Page listeners
-//document.getElementById("btn-1").addEventListener("click", defaultCalculation);
-document.getElementById("btn-2").addEventListener("click", addCalcul);
-document.getElementById("btn-3").addEventListener("click", displayNumberCalcul);
-document.getElementById("btn-4").addEventListener("click", showResult);
+// add Functions to top menu
+document.getElementById("addNewCalcul").addEventListener("click", addCalcul);
+document.getElementById("showNumberCalculus").addEventListener("click", displayNumberCalcul);
 
 //-----     Init
 let numbers = [1,2,3,4,5,6,7,8,9,0];
+// display the buttons type 'numbers'
 let numberButtonDescription= numbers.map(number=>{return{name:number.toString(), value:number}});
 displayNumber (numberButtonDescription);
-initOperands ();
-document.getElementById("btn-4").addEventListener("click", showResult);
+// Displey the buttons type 'operators'
+initOperators();
+
+// Show the result
 showResult()

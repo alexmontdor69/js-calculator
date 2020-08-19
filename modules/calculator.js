@@ -1,5 +1,5 @@
 import { Expression} from './expression.js';
-import { Operator, operands} from './operator.js';
+import { operators} from './operator.js';
 
 export default function Calculator () {
     this.calculs=[];
@@ -13,13 +13,13 @@ export default function Calculator () {
 
     this.addCalcul();
     
-    // display the operator
-    this.showOperands= function() {
-        return operands;
+    // display the operators
+    this.showOperators= function() {
+        return operators;
     }
 
     this.getOperatorSymbol= expression => {
-        if (operands[expression]) return operands[expression].name
+        if (operators[expression]) return operators[expression].name
         return expression
     };
     
@@ -95,8 +95,8 @@ const calculateHighPriorityExpression = function(expressions, LHS=0) {
     
     if (typeof expressions[0] == 'number')
         return expressions[0]
-    if ((typeof expressions[0] == 'string' && operands[expressions[0]]))
-        return operands[expressions[0]].execute(LHS, b)
+    if ((typeof expressions[0] == 'string' && operators[expressions[0]]))
+        return operators[expressions[0]].execute(LHS, b)
     
 }
 
@@ -109,15 +109,15 @@ function getExp (expressions) {
     for (let inc= 0; inc<expressions.length; inc++){
         const digit=expressions[inc];
         
-        if (digit && typeof digit == "string"&&operands[digit]&&operands[digit].priority==0)
+        if (digit && typeof digit == "string"&&operators[digit]&&operators[digit].priority==0)
         {
             lowExpressions=[...lowExpressions, expressions.slice(startIndex, inc)]
 
             if (operand)
                 lowExpressions=[...lowExpressions, [operand]]
 
-            if (operands[digit]&&operands[digit].description)
-                operand = operands[digit].description
+            if (operators[digit]&&operators[digit].description)
+                operand = operators[digit].description
             
             startIndex = inc+1;
         }
@@ -140,7 +140,7 @@ function getExp (expressions) {
         {
             for (let inc= 0; inc<expression.length; inc++){
                 const digit=expression[inc];
-                if (digit && typeof digit == "string"&&operands[digit]&&operands[digit].priority==1)
+                if (digit && typeof digit == "string"&&operators[digit]&&operators[digit].priority==1)
                 {
                     highPriorityExpressions=expression.slice(startIndex, inc)
                     if (highPriorityExpressions.length>1)
@@ -148,8 +148,8 @@ function getExp (expressions) {
                         mediumPriorityExp[key]=[...mediumPriorityExp[key], highPriorityExpressions]
                     if (operand)
                         mediumPriorityExp[key]=[...mediumPriorityExp[key], [operand]]
-                    if (operands[digit]&&operands[digit].description)
-                        operand = operands[digit].description
+                    if (operators[digit]&&operators[digit].description)
+                        operand = operators[digit].description
                     startIndex = inc+1;
                 }
             } 
@@ -191,8 +191,8 @@ const getResultsFor = function (expressions){
             digit =[getResultsFor (mediumPriorityExp[inc])]
         if (typeof digit[0] == "number")
             b=digit[0]
-        if (typeof digit[0] == "string"&&operands[digit[0]])
-            a=operands[digit[0]].execute(a,b)
+        if (typeof digit[0] == "string"&&operators[digit[0]])
+            a=operators[digit[0]].execute(a,b)
         }
     console.log ('SR for', expressions,'=',a)
     return a
@@ -223,4 +223,4 @@ const getResultsFor = function (expressions){
         get: function() {return this.expressionsList}
     })
 }
-console.log ('operands',operands)
+console.log ('operators',operators)

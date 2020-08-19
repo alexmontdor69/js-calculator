@@ -10,8 +10,8 @@ export function Operator (name,description,format,priority,args,exeFunc) {
     this.execute=new Function (args,exeFunc);
         
 }
-// list of the basic operands
-export const operands = {
+// list of the basic operators
+export const operators = {
     add : new Operator ('+','add',{pre:1, post: 1} ,0,'a,b', `console.log (a,'+', b);return a+b;`),
     sub : new Operator ('-', 'sub',{pre:1, post: 1},0,'a,b', `console.log (a,'-', b);return a-b;`),
     multiply : new Operator ('x','multiply',{pre:1, post: 1} ,1,'a,b', `console.log (a,'*', b);return a*b;`),
