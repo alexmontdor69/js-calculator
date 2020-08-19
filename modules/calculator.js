@@ -88,24 +88,6 @@ function Calculus () {
         };
 
 
-
-// make them private
-/*     this.add = new Operator ('+', false,'a,b', `return a+b;`);
-    this.sub = new Operator ('-', false,'a,b', `return a-b;`);
-    this.multiply = new Operator ('x', true,'a,b', `return a*b;`);
-    this.divide = new Operator ('/', true,'a,b', `return a/b;`); */
-    
-
-/*     this.bracketOpen = new Operator ('(', true,'a,b', `
-        console.log ('b',b,typeof b,b.lastIndexOf("bracketClose",-1));
-        return b.lastIndexOf("bracketClose",-1);`);
-    this.bracketClose = new Operator (')', true,'a,b', `return;`); */
-
-/**
- * Calcultate should calculate the expression with high priority flag
- * Should end the calculation with low priority operand
- */
-
 const calculateHighPriorityExpression = function(expressions, LHS=0) {
     let b;
     if (expressions.length>0)

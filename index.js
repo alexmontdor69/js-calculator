@@ -5,19 +5,63 @@ const myCalculator = new Calculator();
 
 //-----     Init functions
 function initOperands () {
+    let inc=0, lineRef=1; 
     const operands = myCalculator.showOperands();
+
     for (const [key, operand] of Object.entries(operands)) {
+        if( inc==0){
+            let newDiv = document.createElement ('div');
+            newDiv.id = `operator-line-${lineRef}`;
+            newDiv.className = 'operator-buttons container column';  
+            document.getElementById("basic-operators").appendChild(newDiv);  
+        }
         let newSpan = document.createElement('div');
         newSpan.id = key;
-        newSpan.className = 'operator-button';
-        document.getElementById("basic-operators").appendChild(newSpan);
+        newSpan.className = 'touch operator-button';
+        document.getElementById(`operator-line-${lineRef}`).appendChild(newSpan);
         document.getElementById(key).textContent =operand.name;
         document.getElementById(key).addEventListener("click", addExpression );
-        console.log(`${key}: ${operand.name}`);
+        inc++;
+        if (inc==4) {
+            inc=0;
+            lineRef++;
+        }
       }
 }
 
-//-----     Page functions
+function displayNumber(numberDescriptions) {
+    let inc=0, lineRef=1;
+
+    numberDescriptions.map(description =>{
+        if( inc==0){
+            let newDiv = document.createElement ('div');
+            newDiv.id = `line-${lineRef}`;
+            newDiv.className = 'container row';  
+            document.getElementById("numbers").appendChild(newDiv);  
+        }
+        let newDiv = document.createElement ('div');
+        newDiv.id = description.name;
+        newDiv.name = description.name;
+        newDiv.className = 'touch';
+        newDiv.textContent =description.name;
+        document.getElementById(`line-${lineRef}`).appendChild(newDiv);
+        document.getElementById(description.name).addEventListener("click", addExpression);
+        inc++;
+        if (inc==3) {
+            inc=0;
+            lineRef++;
+        }
+    })
+    
+}
+
+/**
+ * 
+ * @param {*} key 
+ * @param {*} content 
+ * @param {*} upperlevel 
+ * @param {*} current 
+ */
 function displayCalcul(key, content, upperlevel, current ='current') {
     
     const spanId = `${upperlevel}_${key}`;
@@ -57,34 +101,19 @@ function displayCalcul(key, content, upperlevel, current ='current') {
             document.getElementById(spanId).appendChild(newDigit);
             
         }
-/* Not SURE ABOUT THIS PART
-PROBABLY TO GET RID OF
 
-        if (typeof expression=="string")
-            document.getElementById(key).textContent =operand[expression].name;
-        else
-            document.getElementById(key).addEventListener("click", addControl ); */
     })
 }
-function displayNumber(numberDescriptions) {
-    numberDescriptions.map(description =>{
-        let newDiv = document.createElement ('div');
-        newDiv.id = description.name;
-        newDiv.name = description.name;
-        newDiv.className = 'number-touch';
-        newDiv.textContent =description.name;
-        document.getElementById("numbers").appendChild(newDiv);
-        document.getElementById(description.name).addEventListener("click", addExpression);
-    })
-    
-}
 
-function addExpression (el,ev) {
-    console.log(el,ev);
+/**
+ * 
+ * @param {*} el 
+ */
+function addExpression (el) {
     myCalculator.currentCalcul.addExpression (el.srcElement.id);
 
     [...document.getElementsByClassName("main")].forEach(
-        (element, index, array) => {
+        (element) => {
             if (element.parentElement.id == "current-main-expression") 
                 element.remove();
         }
@@ -97,6 +126,9 @@ function addExpression (el,ev) {
     showResult()
 }
 
+/**
+ * 
+ */
 function showPreviousCalcul(){
     const totalCalcul = myCalculator.calculs.length;
     const parentElementName = 'previous-main-expression';
@@ -133,6 +165,11 @@ function showResult() {
    
 }
 
+/**
+ *  Add a new calculus to the calculator
+ * Save the precedent ones
+ * To implement : click on the previous calculus to be displayed
+ */
 function addCalcul () {
     myCalculator.addCalcul();
     showPreviousCalcul()
@@ -140,6 +177,9 @@ function addCalcul () {
     console.log ('calcul added', myCalculator);
 }
 
+/**
+ * 
+ */
 function  displayNumberCalcul() {
     document.getElementById('main').textContent= myCalculator.calculs.length;
     console.log ( myCalculator.calculs.length);

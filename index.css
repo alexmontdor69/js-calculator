@@ -20,3 +20,32 @@
 .prev-exp{
     display: block;
 }
+
+/*Touch Pad*/
+.container{ 
+    display: flex ;
+}
+.row {
+    flex-direction: row;
+}
+.column {
+    flex-direction: column;
+}
+.touch { 
+    flex: 1 ;
+    border: 1px solid grey;
+    margin: 10px;
+}
+.touch-pad{
+ border : 1px black double;
+}
+.basic-operators {
+    flex: 1 ;
+    
+}
+.operator-buttons {
+    flex:1;
+}
+.numbers{
+    flex: 1 ;
+}
